@@ -32,11 +32,13 @@ public class Population {
 	 */
 	public void move() {
 		// TODO good for performance rewrite for reusing array. Copy for now
+		// TODO easy to reuse two arrays
 		int[][] newPopulation = new int[ROWS][COLS];
 		int newCount = 0;
 			for (int i = 0; i < ROWS; i++) {
 				for (int j = 0; j < COLS; j++) {
 					int nCount = getNeighboursCount(i, j);
+					// TODO make DSL for rules
 					// Rule 1: Dead becomes Live if have 3 neighbours
 					if (field[i][j] == 0 && nCount == 3) {
 						newPopulation[i][j] = 1;
@@ -52,6 +54,7 @@ public class Population {
 		field = newPopulation;
 		populationCount = newCount;
 		if (isEmpty()) throw new PopulationIsDeadException("Game over!");
+		// TODO handle stability
 	}
 	
 	private boolean isEmpty() {
@@ -106,6 +109,10 @@ public class Population {
 			b.append("\n");
 		}
 		return b.toString();
+	}
+	
+	public int[][] getField() {
+		return field;	// TODO return copy
 	}
 	
 	public int getCount() {
