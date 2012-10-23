@@ -6,7 +6,7 @@ package com.mindbar.life.model;
  *
  */
 public enum Cell {
-	DEAD(0),
+	EMPTY(0),
 	LIVE(1);
 	
 	private int code;
@@ -27,6 +27,6 @@ public enum Cell {
 			}
 		}
 		// Do not throw exception, just return dead cell if code not found
-		return Cell.DEAD;
+		return Cell.EMPTY;
 	}
 }

@@ -37,12 +37,12 @@ public class Population {
 					int nCount = getNeighboursCount(i, j);
 					// TODO make DSL for rules
 					// Rule 1: Dead becomes Live if have 3 neighbours
-					if (field[i][j] == Cell.DEAD && nCount == 3) {
+					if (field[i][j] == Cell.EMPTY && nCount == 3) {
 						newPopulation[i][j] = Cell.LIVE;
 						newCount++;
 						continue;
 					} else {
-						newPopulation[i][j] = Cell.DEAD;
+						newPopulation[i][j] = Cell.EMPTY;
 					}
 					// Rule 2: Live becomes dead if less than 2 or greater than 3 neighbours
 					if (field[i][j] == Cell.LIVE && nCount >= 2 && nCount <= 3) {
@@ -50,7 +50,7 @@ public class Population {
 						newCount++;
 						continue;
 					} else {
-						newPopulation[i][j] = Cell.DEAD;
+						newPopulation[i][j] = Cell.EMPTY;
 						continue;
 					}
 				}
