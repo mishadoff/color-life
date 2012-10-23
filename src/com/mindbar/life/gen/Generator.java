@@ -6,11 +6,7 @@ import com.mindbar.life.model.Cell;
 
 public class Generator {
 	
-	private Random random;
-	
-	public Generator() {
-		random = new Random();
-	}
+	private static Random random = new Random();
 	
 	public Cell[][] getRandomPopulation(int rows, int cols) {
 		Cell[][] pop = new Cell[rows][cols];
@@ -25,6 +21,11 @@ public class Generator {
 	// TODO rewrite to generic probability cell map
 	public Cell getRandomDeadLife() {
 		return Cell.fromCode(random.nextInt(2));
+	}
+	
+	// TODO extract to generator utils
+	public static int generateStep() {
+		return random.nextInt(3) - 1;
 	}
 	
 }

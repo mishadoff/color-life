@@ -5,6 +5,7 @@ import static com.mindbar.life.utils.ArithmeticUtils.rMod;
 import java.util.HashSet;
 
 import com.mindbar.life.exception.PopulationIsDeadException;
+import com.mindbar.life.gen.Generator;
 
 /**
  * Class describes each population. Backed by array[][].
@@ -18,12 +19,14 @@ public class Population {
 	private final int COLS;
 	
 	private int populationCount = 0;
+	private int virusesCount = 0;
 	
 	public Population(Cell[][] startPopulation) {
 		field = startPopulation;	// think about copy
 		ROWS = startPopulation.length;
 		COLS = startPopulation[0].length;
-		populationCount = calculatePopulation(startPopulation);
+		populationCount = calculateCells(startPopulation, Cell.LIVE);
+		virusesCount = calculateCells(startPopulation, Cell.VIRUS);
 	}
 
 	/**
@@ -68,13 +71,20 @@ public class Population {
 		for (Integer ij : viruses) {
 			// parse int
 			int i = ij / COLS;
-			int j = ij % ROWS;
+			int j = ij % COLS;
 			// TODO generate destination
-			int iNew = i + 1;
-			int jNew = j;
+			int iNew = i + Generator.generateStep();
+			int jNew = j + Generator.generateStep();
 			// move virus
 			if (newPopulation[rMod(iNew, ROWS)][rMod(jNew, COLS)] == Cell.VIRUS) {
-				// TODO BURST
+				System.err.println("BURST!!!");
+				newPopulation[i][j] = Cell.EMPTY;
+				newPopulation[rMod(iNew, ROWS)][rMod(jNew, COLS)] = Cell.EMPTY;
+				// burst itself
+				newPopulation[rMod(iNew - 2, ROWS)][rMod(jNew, COLS)] = Cell.VIRUS;
+				newPopulation[rMod(iNew + 2, ROWS)][rMod(jNew, COLS)] = Cell.VIRUS;
+				newPopulation[rMod(iNew, ROWS)][rMod(jNew - 2, COLS)] = Cell.VIRUS;
+				newPopulation[rMod(iNew, ROWS)][rMod(jNew + 2, COLS)] = Cell.VIRUS;
 			} else {
 				newPopulation[i][j] = Cell.EMPTY;
 				newPopulation[rMod(iNew, ROWS)][rMod(jNew, COLS)] = Cell.VIRUS;
@@ -84,6 +94,7 @@ public class Population {
 			
 		field = newPopulation;
 		populationCount = newCount;
+		virusesCount = viruses.size();
 		if (isEmpty()) throw new PopulationIsDeadException("Game over!");
 		// TODO handle stability
 	}
@@ -116,11 +127,11 @@ public class Population {
 		return count;
 	}
 	
-	private int calculatePopulation(Cell[][] population) {
+	private int calculateCells(Cell[][] population, Cell cell) {
 		int count = 0;
 		for (int i = 0; i < ROWS; i++) {
 			for (int j = 0; j < COLS; j++) {
-				if (population[i][j] == Cell.LIVE) count++;
+				if (population[i][j] == cell) count++;
 			}
 		}
 		return count;
@@ -150,8 +161,12 @@ public class Population {
 		return field;	// TODO return copy
 	}
 	
-	public int getCount() {
+	public int getLiveCount() {
 		return populationCount;
+	}
+	
+	public int getVirusCount() {
+		return virusesCount;
 	}
 	
 }
