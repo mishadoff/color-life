@@ -2,6 +2,8 @@ package com.mindbar.life.gen;
 
 import java.util.Random;
 
+import com.mindbar.life.model.Cell;
+
 public class Generator {
 	
 	private Random random;
@@ -10,14 +12,19 @@ public class Generator {
 		random = new Random();
 	}
 	
-	public int[][] getRandomPopulation(int rows, int cols) {
-		int[][] pop = new int[rows][cols];
+	public Cell[][] getRandomPopulation(int rows, int cols) {
+		Cell[][] pop = new Cell[rows][cols];
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
-				pop[i][j] = random.nextInt(2);
+				pop[i][j] = getRandomDeadLife();
 			}
 		}
 		return pop;
+	}
+	
+	// TODO rewrite to generic probability cell map
+	public Cell getRandomDeadLife() {
+		return Cell.fromCode(random.nextInt(2));
 	}
 	
 }

@@ -10,17 +10,14 @@ import com.mindbar.life.exception.PopulationIsDeadException;
  *
  */
 public class Population {
-	private int[][] field;
+	private Cell[][] field;
 	
 	private final int ROWS;
 	private final int COLS;
 	
-	private final String DEAD_SYMBOL = ".";
-	private final String LIVE_SYMBOL = "#";
-	
 	private int populationCount = 0;
 	
-	public Population(int[][] startPopulation) {
+	public Population(Cell[][] startPopulation) {
 		field = startPopulation;	// think about copy
 		ROWS = startPopulation.length;
 		COLS = startPopulation[0].length;
@@ -33,21 +30,28 @@ public class Population {
 	public void move() {
 		// TODO good for performance rewrite for reusing array. Copy for now
 		// TODO easy to reuse two arrays
-		int[][] newPopulation = new int[ROWS][COLS];
+		Cell[][] newPopulation = new Cell[ROWS][COLS];
 		int newCount = 0;
 			for (int i = 0; i < ROWS; i++) {
 				for (int j = 0; j < COLS; j++) {
 					int nCount = getNeighboursCount(i, j);
 					// TODO make DSL for rules
 					// Rule 1: Dead becomes Live if have 3 neighbours
-					if (field[i][j] == 0 && nCount == 3) {
-						newPopulation[i][j] = 1;
+					if (field[i][j] == Cell.DEAD && nCount == 3) {
+						newPopulation[i][j] = Cell.LIVE;
 						newCount++;
+						continue;
+					} else {
+						newPopulation[i][j] = Cell.DEAD;
 					}
 					// Rule 2: Live becomes dead if less than 2 or greater than 3 neighbours
-					if (field[i][j] == 1 && nCount >= 2 && nCount <= 3) {
-						newPopulation[i][j] = 1;
+					if (field[i][j] == Cell.LIVE && nCount >= 2 && nCount <= 3) {
+						newPopulation[i][j] = Cell.LIVE;
 						newCount++;
+						continue;
+					} else {
+						newPopulation[i][j] = Cell.DEAD;
+						continue;
 					}
 				}
 			}
@@ -60,7 +64,7 @@ public class Population {
 	private boolean isEmpty() {
 		for (int i = 0; i < ROWS; i++) {
 			for (int j = 0; j < COLS; j++) {
-				if (field[i][j] == 1) return false;
+				if (field[i][j] == Cell.LIVE) return false;
 			}
 		}
 		return true;
@@ -74,29 +78,29 @@ public class Population {
 	 */
 	private int getNeighboursCount(int i, int j) {
 		int count = 0;
-		count += field[rMod(i + 1, ROWS)][j];
-		count += field[rMod(i - 1, ROWS)][j];
-		count += field[rMod(i + 1, ROWS)][rMod(j + 1, COLS)];
-		count += field[rMod(i - 1, ROWS)][rMod(j + 1, COLS)];
-		count += field[rMod(i + 1, ROWS)][rMod(j - 1, COLS)];
-		count += field[rMod(i - 1, ROWS)][rMod(j - 1, COLS)];
-		count += field[i][rMod(j + 1, COLS)];
-		count += field[i][rMod(j - 1, COLS)];
+		count += (field[rMod(i + 1, ROWS)][j] == Cell.LIVE) ? 1 : 0;
+		count += (field[rMod(i - 1, ROWS)][j] == Cell.LIVE) ? 1 : 0;
+		count += (field[rMod(i + 1, ROWS)][rMod(j + 1, COLS)] == Cell.LIVE) ? 1 : 0;
+		count += (field[rMod(i - 1, ROWS)][rMod(j + 1, COLS)] == Cell.LIVE) ? 1 : 0;
+		count += (field[rMod(i + 1, ROWS)][rMod(j - 1, COLS)] == Cell.LIVE) ? 1 : 0;
+		count += (field[rMod(i - 1, ROWS)][rMod(j - 1, COLS)] == Cell.LIVE) ? 1 : 0;
+		count += (field[i][rMod(j + 1, COLS)] == Cell.LIVE) ? 1 : 0;
+		count += (field[i][rMod(j - 1, COLS)] == Cell.LIVE) ? 1 : 0;
 		return count;
 	}
 	
-	private int calculatePopulation(int[][] population) {
+	private int calculatePopulation(Cell[][] population) {
 		int count = 0;
 		for (int i = 0; i < ROWS; i++) {
 			for (int j = 0; j < COLS; j++) {
-				if (population[i][j] == 1) count++;
+				if (population[i][j] == Cell.LIVE) count++;
 			}
 		}
 		return count;
 	}
 	
 	private String print(int i, int j) {
-		return (field[i][j] == 1) ? LIVE_SYMBOL : DEAD_SYMBOL;
+		return (field[i][j] == Cell.LIVE) ? Symbols.LIVE_SYMBOL : Symbols.DEAD_SYMBOL;
 	}
 	
 	@Override
@@ -111,7 +115,7 @@ public class Population {
 		return b.toString();
 	}
 	
-	public int[][] getField() {
+	public Cell[][] getField() {
 		return field;	// TODO return copy
 	}
 	

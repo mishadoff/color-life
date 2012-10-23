@@ -22,5 +22,5 @@ public final class Configurations {
 		int[][] a = new int[ROWS][COLS];
 			a[3][7] = 1; a[4][8] = 1; a[5][6] = 1; a[5][7] = 1; a[5][8] = 1;
 		return a;
-	}
+	}	
 }
