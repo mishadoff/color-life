@@ -7,7 +7,10 @@ package com.mindbar.life.model;
  */
 public enum Cell {
 	EMPTY(0),
-	LIVE(1);
+	LIVE(1),
+	VIRUS(2),
+	
+	;
 	
 	private int code;
 	

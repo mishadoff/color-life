@@ -2,6 +2,7 @@ package com.mindbar.life.runner;
 
 import com.mindbar.life.exception.PopulationIsDeadException;
 import com.mindbar.life.gen.Generator;
+import com.mindbar.life.model.Cell;
 import com.mindbar.life.model.Configurations;
 import com.mindbar.life.model.Population;
 
@@ -9,10 +10,12 @@ public class LifeRunner {
 	public static void main(String[] args) throws InterruptedException {
 		try {
 			Generator generator = new Generator();
-			Population p = new Population(generator.getRandomPopulation(30, 140));
+			Population p = new Population(generator.getRandomPopulation(10, 10));
+			// ha-ha this is a virus
+				p.getField()[3][7] = Cell.VIRUS;
 			//Population p = new Population(Configurations.getGlider());
 			// print new population every 1 second
-			final int TIME_STEP = 1000;
+			final int TIME_STEP = 5000;
 			long population = 0;
 			while (true) {
 				Thread.sleep(TIME_STEP);

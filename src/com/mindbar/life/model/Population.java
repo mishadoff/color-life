@@ -2,6 +2,8 @@ package com.mindbar.life.model;
 
 import static com.mindbar.life.utils.ArithmeticUtils.rMod;
 
+import java.util.HashSet;
+
 import com.mindbar.life.exception.PopulationIsDeadException;
 
 /**
@@ -31,12 +33,19 @@ public class Population {
 		// TODO good for performance rewrite for reusing array. Copy for now
 		// TODO easy to reuse two arrays
 		Cell[][] newPopulation = new Cell[ROWS][COLS];
+		
+		HashSet<Integer> viruses = new HashSet<Integer>();
+		
 		int newCount = 0;
 			for (int i = 0; i < ROWS; i++) {
 				for (int j = 0; j < COLS; j++) {
+					if (field[i][j] == Cell.VIRUS) { // move it to random direction
+						viruses.add(i * COLS + j);
+						continue;
+					}
 					int nCount = getNeighboursCount(i, j);
-					// TODO make DSL for rules
-					// Rule 1: Dead becomes Live if have 3 neighbours
+					// TODO make DSL for the rules
+					// Rule 1: EMPTY becomes LIVE if have 3 neighbours
 					if (field[i][j] == Cell.EMPTY && nCount == 3) {
 						newPopulation[i][j] = Cell.LIVE;
 						newCount++;
@@ -55,6 +64,24 @@ public class Population {
 					}
 				}
 			}
+		// handle viruses
+		for (Integer ij : viruses) {
+			// parse int
+			int i = ij / COLS;
+			int j = ij % ROWS;
+			// TODO generate destination
+			int iNew = i + 1;
+			int jNew = j;
+			// move virus
+			if (newPopulation[rMod(iNew, ROWS)][rMod(jNew, COLS)] == Cell.VIRUS) {
+				// TODO BURST
+			} else {
+				newPopulation[i][j] = Cell.EMPTY;
+				newPopulation[rMod(iNew, ROWS)][rMod(jNew, COLS)] = Cell.VIRUS;
+			}
+		}
+		
+			
 		field = newPopulation;
 		populationCount = newCount;
 		if (isEmpty()) throw new PopulationIsDeadException("Game over!");
@@ -100,7 +127,11 @@ public class Population {
 	}
 	
 	private String print(int i, int j) {
-		return (field[i][j] == Cell.LIVE) ? Symbols.LIVE_SYMBOL : Symbols.DEAD_SYMBOL;
+		// TODO rewrite with command
+		if (field[i][j] == Cell.LIVE) return Symbols.LIVE_SYMBOL;
+		if (field[i][j] == Cell.EMPTY) return Symbols.EMPTY_SYMBOL;
+		if (field[i][j] == Cell.VIRUS) return Symbols.VIRUS_SYMBOL;
+		else return "+";
 	}
 	
 	@Override
