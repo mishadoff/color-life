@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import com.mindbar.life.exception.PopulationIsDeadException;
 import com.mindbar.life.gen.Generator;
+import com.mindbar.life.utils.RandomUtils;
 
 /**
  * Class describes each population. Backed by array[][].
@@ -25,7 +26,7 @@ public class Population {
 		field = startPopulation;	// think about copy
 		ROWS = startPopulation.length;
 		COLS = startPopulation[0].length;
-		populationCount = calculateCells(startPopulation, Cell.LIVE);
+		populationCount = calculateLive(startPopulation);
 		virusesCount = calculateCells(startPopulation, Cell.VIRUS);
 	}
 
@@ -50,15 +51,15 @@ public class Population {
 					// TODO make DSL for the rules
 					// Rule 1: EMPTY becomes LIVE if have 3 neighbours
 					if (field[i][j] == Cell.EMPTY && nCount == 3) {
-						newPopulation[i][j] = Cell.LIVE;
+						newPopulation[i][j] = RandomUtils.genRGB();
 						newCount++;
 						continue;
 					} else {
 						newPopulation[i][j] = Cell.EMPTY;
 					}
 					// Rule 2: Live becomes dead if less than 2 or greater than 3 neighbours
-					if (field[i][j] == Cell.LIVE && nCount >= 2 && nCount <= 3) {
-						newPopulation[i][j] = Cell.LIVE;
+					if (field[i][j].isLive() && nCount >= 2 && nCount <= 3) {
+						newPopulation[i][j] = field[i][j];
 						newCount++;
 						continue;
 					} else {
@@ -73,8 +74,8 @@ public class Population {
 			int i = ij / COLS;
 			int j = ij % COLS;
 			// TODO generate destination
-			int iNew = i + Generator.generateStep();
-			int jNew = j + Generator.generateStep();
+			int iNew = i + RandomUtils.generateStep();
+			int jNew = j + RandomUtils.generateStep();
 			// move virus
 			if (newPopulation[rMod(iNew, ROWS)][rMod(jNew, COLS)] == Cell.VIRUS) {
 				System.err.println("BURST!!!");
@@ -102,7 +103,7 @@ public class Population {
 	private boolean isEmpty() {
 		for (int i = 0; i < ROWS; i++) {
 			for (int j = 0; j < COLS; j++) {
-				if (field[i][j] == Cell.LIVE) return false;
+				if (field[i][j].isLive()) return false;
 			}
 		}
 		return true;
@@ -116,14 +117,24 @@ public class Population {
 	 */
 	private int getNeighboursCount(int i, int j) {
 		int count = 0;
-		count += (field[rMod(i + 1, ROWS)][j] == Cell.LIVE) ? 1 : 0;
-		count += (field[rMod(i - 1, ROWS)][j] == Cell.LIVE) ? 1 : 0;
-		count += (field[rMod(i + 1, ROWS)][rMod(j + 1, COLS)] == Cell.LIVE) ? 1 : 0;
-		count += (field[rMod(i - 1, ROWS)][rMod(j + 1, COLS)] == Cell.LIVE) ? 1 : 0;
-		count += (field[rMod(i + 1, ROWS)][rMod(j - 1, COLS)] == Cell.LIVE) ? 1 : 0;
-		count += (field[rMod(i - 1, ROWS)][rMod(j - 1, COLS)] == Cell.LIVE) ? 1 : 0;
-		count += (field[i][rMod(j + 1, COLS)] == Cell.LIVE) ? 1 : 0;
-		count += (field[i][rMod(j - 1, COLS)] == Cell.LIVE) ? 1 : 0;
+		count += (field[rMod(i + 1, ROWS)][j].isLive()) ? 1 : 0;
+		count += (field[rMod(i - 1, ROWS)][j] .isLive()) ? 1 : 0;
+		count += (field[rMod(i + 1, ROWS)][rMod(j + 1, COLS)] .isLive()) ? 1 : 0;
+		count += (field[rMod(i - 1, ROWS)][rMod(j + 1, COLS)] .isLive()) ? 1 : 0;
+		count += (field[rMod(i + 1, ROWS)][rMod(j - 1, COLS)] .isLive()) ? 1 : 0;
+		count += (field[rMod(i - 1, ROWS)][rMod(j - 1, COLS)] .isLive()) ? 1 : 0;
+		count += (field[i][rMod(j + 1, COLS)] .isLive()) ? 1 : 0;
+		count += (field[i][rMod(j - 1, COLS)] .isLive()) ? 1 : 0;
+		return count;
+	}
+	
+	private int calculateLive(Cell[][] population) {
+		int count = 0;
+		for (int i = 0; i < ROWS; i++) {
+			for (int j = 0; j < COLS; j++) {
+				if (population[i][j].isLive()) count++;
+			}
+		}
 		return count;
 	}
 	
@@ -138,11 +149,7 @@ public class Population {
 	}
 	
 	private String print(int i, int j) {
-		// TODO rewrite with command
-		if (field[i][j] == Cell.LIVE) return Symbols.LIVE_SYMBOL;
-		if (field[i][j] == Cell.EMPTY) return Symbols.EMPTY_SYMBOL;
-		if (field[i][j] == Cell.VIRUS) return Symbols.VIRUS_SYMBOL;
-		else return "+";
+		return field[i][j].getSymbol();
 	}
 	
 	@Override

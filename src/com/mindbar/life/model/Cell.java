@@ -6,16 +6,27 @@ package com.mindbar.life.model;
  *
  */
 public enum Cell {
-	EMPTY(0),
-	LIVE(1),
-	VIRUS(2),
+	EMPTY(0, "."),
+	LIVE(1, "#"),
+	VIRUS(2, "@"),
+	
+	R(3, "R"),
+	G(4, "G"),
+	B(5, "B"),
 	
 	;
 	
 	private int code;
+	private String symbol;
 	
-	private Cell(int code) {
+	private Cell(int code, String symbol) {
 		this.code = code;
+		this.symbol = symbol;
+	}
+	
+	public boolean isLive() {
+		// TODO implement with private static set
+		return this == LIVE || this == R || this == G || this == B;
 	}
 	
 	/**
@@ -31,5 +42,13 @@ public enum Cell {
 		}
 		// Do not throw exception, just return dead cell if code not found
 		return Cell.EMPTY;
+	}
+	
+	public int getCode() {
+		return code;
+	}
+	
+	public String getSymbol() {
+		return symbol;
 	}
 }
