@@ -1,0 +1,2 @@
+Basic Implementation: 6.5 sec.
+Enum Cells introduced: 8 sec.

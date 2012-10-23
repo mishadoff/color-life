@@ -10,7 +10,7 @@ import com.mindbar.life.model.Population;
 public class PerformanceTest {
 
 	@Test
-	public void testPerformance() {	// 6.5 sec
+	public void testPerformance() {
 		final int ROWS = 100;
 		final int COLS = 100;
 		int NUM = 10000;
